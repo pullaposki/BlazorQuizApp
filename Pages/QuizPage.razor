@@ -1,15 +1,56 @@
 ﻿<!--Quiz Application: In this application, you can answer multiple-choice questions. 
 This will help you understand how to handle events like selecting an option and clicking on the ‘Next’ button,
 and how to use parameters to determine which question the user is answering.-->
+@using QuizApp.Services;
+@inject IQuizService QuizService
 
 <h3>Quiz</h3>
 
-<p></p>
+@if (_isQuizFinished)
+{
+    <p>You've finished the quiz! Your score is @QuizService.GetScore().</p>
+}
+else
+{
+    var question = QuizService.GetQuiz().Questions[_currentQuestionIndex];
+    <h3>@question.QuestionText</h3>
+    <ul>
+        @for (var i = 0; i < question.Answers.Count; i++)
+        {
+            var answerIndex = i; // To avoid issue with modified closure
+            <li>
+                <input type="radio" name="answer" value="@answerIndex" @onchange="() => SelectAnswer(answerIndex)" />
+                @question.Answers[i]
+            </li>
+        }
+    </ul>
+    <button @onclick="NextQuestion">Next Question</button>
+}
+
 
 
 @code {
-	
+    private int _currentQuestionIndex = 0;
+    private int _selectedAnswerIndex = -1;
+    private bool _isQuizFinished = false;
 
-	
+    private void SelectAnswer(int index)
+    {
+        _selectedAnswerIndex = index;
+    }
+
+    private void NextQuestion()
+    {
+        var isCorrect = QuizService.AnswerIsCorrect(QuizService.GetQuiz().Questions[_currentQuestionIndex], _selectedAnswerIndex);
+        // Provide feedback to the user based on 'isCorrect'
+
+        _currentQuestionIndex++;
+        if (_currentQuestionIndex >= QuizService.GetQuiz().Questions.Count)
+        {
+            _isQuizFinished = true;
+        }
+
+        _selectedAnswerIndex = -1; // Reset for the next question
+    }
 
 }

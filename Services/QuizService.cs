@@ -4,11 +4,12 @@ namespace QuizApp.Services
 {
 	interface IQuizService
 	{
+		public bool AnswerIsCorrect(Question question, int answerIndex);
 		public Quiz GetQuiz();
 		public int GetScore();
 	}
 
-	public class QuizService: IQuizService
+    public class QuizService : IQuizService
 	{
 		Quiz _quiz;
 		int _score;
@@ -32,7 +33,7 @@ namespace QuizApp.Services
 		}
 
 
-		public bool CheckAnswer(Question question ,int answerIndex)
+		public bool AnswerIsCorrect(Question question ,int answerIndex)
 		{
 			if(question.CorrectAnswerIndex == answerIndex)
 			{
@@ -46,5 +47,5 @@ namespace QuizApp.Services
 
 		public Quiz GetQuiz() => _quiz;
 		public int GetScore() => _score;
-	}
+    }
 }
